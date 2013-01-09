@@ -1,0 +1,23 @@
+ -----
+ NayiDisha DBUnit Plugin
+ -----
+ Pankaj Tandon, July 11, 2010 pankajtandon@gmail.com
+ -----
+
+Build 
+
+    You can build this project by issuing
+    
+-----------
+mvn clean install
+-----------
+
+    To build this site, issue:
+    
+-------------
+mvn site
+-------------
+
+    
+    
+    

@@ -1,0 +1,94 @@
+AutoExport Example
+
+[images/emp-dept.png] Employee Department ER diagram
+   
+   Table <<<EMPLOYEE>>> has a foreign key to itself on the <<<manager_id>>> column. That is, the <<<manager_id>>> column has a foreign key to the <<<employee_id>>>
+   column (primary key) of the <<<EMPLOYEE>>> table. In addition, the EMPLOYEE table's dept_id column is foreign keyed to the DEPARETMENT table's
+   primary key (dept_id).
+   
+   Here is the data in each table:
+   
+   EMPLOYEE
+   
+*-------*--------------*----------------*------------*-----------*
+|Employee_id | Name | Salaray | Manager_id | Dept_id |
+*-------*--------------*----------------*------------*-----------*
+1 | Joe | 100 | 3 | 10 |
+2 | Bob | 300 | 3 | 10 |
+3 | Jill | 200 | - | 10 |
+4 | Jake | 100 | 3 | 10 |
+5 | Hojo | 150 | - | 20 |
+6 | Mojo | 100 | 5 | 20 |
+7 | Dojo | 100 | 8 | 30 |
+8 | Gojo | 100 | - | 30 |
+9 | Zojo | 100 | 8 | 30 |
+*-------*--------------*----------------*------------*-----------*
+
+   DEPARTMENT
+ 
+*-------*--------------*
+|Dept_id | Name |
+*-------*--------------*
+10 | Sales |
+20 | Marketing |
+30 | Accounting |
+*-------*--------------*
+
+    Let us assume that the configFile specified in the configuration of the plugin contains the following configuration:
+    
++---------------------------+
+
+<autoExportConfig>
+		<id>test</id>
+		<useQuotedValues>true</useQuotedValues>
+		<dataSetFullPath>${basedir}/src/test/resources/dbunit/auto/test/test.xml</dataSetFullPath>
+		<baseTable>EMPLOYEE</baseTable>
+		<whereClause>WHERE dept_id IN (10, 30)</whereClause>
+</autoExportConfig>
+                    
++---------------------------+
+
+    The above configuration will yield:
+    
++---------------------------+
+
+C:\projects\Acme> mvn nddbunit:autoExport
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Acme
+[INFO]    task-segment: [nddbunit:autoExport]
+[INFO] ------------------------------------------------------------------------
+[INFO] [nddbunit:autoExport {execution: default-cli}]
+[INFO] 1. test
+[INFO] Enter the number next to the Id that you want to export, 0 to quit
+1
+[INFO] Accessing URL: jdbc:oracle:thin:@somehost:1521:somesid as user superman...
+[INFO] Ready to export:
+[INFO]          DEPARTMENT (2 rows).
+[INFO]          EMPLOYEE (2 rows).
+[INFO]                  EMPLOYEE (5 rows).
+[INFO] Exporting to DataSet directory: C:\projects\Acme/src/test/resources/dbunit/auto/test [2 level based files]...
+[INFO] Do you want to continue to export 9 rows in 3 tables to these 2 files  (Y|N)?
+y
+[INFO] Please use DBUnit to import/refresh these files in the following order:
+[INFO] test-level-1.xml
+[INFO] test-level-0.xml
+[INFO] Files written...
++---------------------------+  
+
+   <<Two>> files that include datasets are produced because there are two levels of data <<and>> because the EMPLOYEE table
+   figures in both the levels. 
+   
+   When data is being imported into the target database, the files will need to be REFRESHed/imported in the order specified. 
+   
+   The first file will contain DEPARTMENT and EMPLOYEE tables. 
+   
+   The DEPARTMENT table will contain two rows with Ids 10 and 30. These are distinct DEPARTMENT Id values within the WHERE clause. 
+   The EMPLOYEE table will contain 2 rows with Ids of 3 and 8, basically the Managers.
+   
+   The second file will contain EMPLOYEE table with 5 rows with Ids 1, 2, 4, 7 and 9. These are the Ids of the employees that are not managers.
+   
+   Note that the plugin takes into consideration the possibility that the foreign keys are processed in a totally random order (in the case a when a 
+   table has more than one foreign key)
+   
+    

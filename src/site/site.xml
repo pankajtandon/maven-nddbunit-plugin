@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Maven">
+
+<!-- 
+  Below is introduced because of http://jira.codehaus.org/browse/MNG-3139 
+  Added version 1.0 of maven-default-skin to prod repo on 11/13/08 - PT
+-->
+<skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-default-skin</artifactId>
+    <version>1.0</version>
+</skin>
+    <bannerLeft>
+        <name>Nayidisha Technologies</name>
+        <src>http://nayidisha.com/mycontent/BCH.png</src>
+        <href>http://www.nayidisha.com/techblog</href>
+    </bannerLeft>
+    <publishDate position="none"/>
+  <body>
+    <links>
+      <item name="TechBlog" href="http://nayidisha.com/techblog/"/>
+    </links>
+    <menu name="Overview">
+      <item name="Introduction" href="index.html"/> 
+      <item name="Usage" href="usage.html"/>
+      <item name="Configuration" href="configuration.html"/>
+      <item name="Example" href="example.html"/>
+      <item name="Build From Source" href="build.html"/>
+      <item name="What's New" href="whatsnew.html"/>
+    </menu>
+   </body>
+    </project>

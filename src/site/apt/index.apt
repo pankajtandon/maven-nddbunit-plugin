@@ -1,0 +1,60 @@
+NayiDisha DBUnit Plugin
+
+    The maven-nddbunit-plugin offers the ability to execute one of many pre-configured export configurations. 
+    The rationale for developing this plug-in can read at {{{http://nayidisha.com/techblog/testing-a-jee-database-app}this}} blog post.
+    
+    As explained, there is a need to create <<and store>> the configuration of several datasets that serve as input and output of test-cases.
+ 
+* Goals Overview
+
+   The Maven NDDBUnit Plugin has two goals:
+
+   * {{{export-mojo.html}<<export>>}} can be used to export data from a database to a pre-configured dataset by selecting from a list of configurations. 
+   In each configuration a table name or a query (or both) can be specified. The data that is exported is in the order of the query/tables specified 
+   in the configuration.
+   
+   * {{{autoExport-mojo.html}<<autoExport>>}} can be used to export data from a database to a pre-configured dataset by selecting from a list of configurations. 
+   In each configuration a base table and an optional WHERE clause may be specified. The plugin then will chase the Foreign Keys defined in the 
+   database and export the minimal set of data that would be required to enable the inserting of rows in the base table (as limited by the WHERE
+   clause if specified). The data will be exported in the correct order so that if tableA depends on tableB that depends on tableC, then data for 
+   tableC will precede tableB's data which will precede tableA's data.
+   
+   This goal also supports recursive foreign keys.
+   
+   This goal will take the order of the foreign keys into consideration. For example:
+   
++-------------------------+
+   
+   A -> B
+   
+   A -> C -> B
+
++-------------------------+
+   
+   The above relationship shows three levels: 0, 1 and 2.
+   There is no guarantee in what order the foreign keys will be processed. The plugin will work if the keys are processed in the above order or the order shown below:
+   
++-------------------------+
+
+   A -> C -> B
+   
+   A -> B
+   
++-------------------------+  
+   
+   In addition a set of tables to exclude may be specified. The tables specified in this list will be excluded in the list <<<if and only if>>> they 
+   appear in the dependent table list. If they do not appear as dependent tables, those tables-to-be-excluded will be ignored. 
+   
+* Compatibility
+
+  The plugin has been tested against Oracle 11g and MySQL 5.1.13
+  
+  
+* Limitations
+
+  The autoExport goal of the plugin only support single column keys while determining table dependencies. Composite keys are not supported at present.
+  
+   
+* Usage
+
+   Instructions on how to use the Maven NDDbunit Plugin can be found {{{usage.html}here}}.

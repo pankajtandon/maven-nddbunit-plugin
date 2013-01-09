@@ -1,0 +1,57 @@
+<!-- Use this file to produce an xsd file using trang, for example -->
+<config xmlns="http://www.nayidisha.com/plugins/nddbunit/schema">
+	<autoExportConfigList>
+		<autoExportConfig>
+			<id>auto-test</id>
+			<excludedTableList>
+				<param>person</param>
+				<param>account</param>
+			</excludedTableList>
+			<useQuotedValues>false</useQuotedValues>
+			<dataSetFullPath>src/test/resources/dbunit/auto/test/auto-test.xml
+			</dataSetFullPath>
+			<baseTable>account_activity</baseTable>
+			<whereClause>WHERE act_id IN (1757, 1758)</whereClause>
+		</autoExportConfig>
+		<autoExportConfig>
+			<id>auto-test2</id>
+			<useQuotedValues>true</useQuotedValues>
+			<dataSetFullPath>src/test/resources/dbunit/auto/test/sharing.xml
+			</dataSetFullPath>
+			<baseTable>agreement_address</baseTable>
+		</autoExportConfig>
+	</autoExportConfigList>
+	<exportConfigList>
+		<exportConfig>
+			<id>sample-output-firm</id>
+			<dataSetFullPath>src/test/resources/dbunit/sample/output/sample-output-firm.xml
+			</dataSetFullPath>
+			<queryList>
+				<query>
+					<name>temp</name>
+					<sql><![CDATA[
+                                        select count(*) merge_count
+                                          from account_audit
+                                         where act_process_type = 'ACCOUNT_FIRM'
+                                           and act_from_value in (18, 20, 19)
+                                           and act_to_value = 17
+                                        union all
+                                        select count(*)
+                                          from home_audit
+                                         where hom_process_type = 'HOME_FIRM'
+                                           and hom_from_value in (61, 62, 58, 56)
+                                           and hom_to_value = 55
+                                        union all
+                                        select count(*)
+                                          from department_audit
+                                         where dep_process_type = 'DEP_FIRM'
+                                           and dep_from_value in (29, 26, 28, 25)
+                                           and dep_to_value = 27
+
+                                      ]]></sql>
+				</query>
+			</queryList>
+		</exportConfig>
+
+	</exportConfigList>
+</config>       

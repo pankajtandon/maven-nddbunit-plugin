@@ -1,0 +1,145 @@
+ -----
+ Maven NDDBunit Plugin
+ -----
+ Pankaj Tandon, Nov 2010 pankajtandon@gmail.com
+ -----
+
+Usage
+
+ The Maven NDDBunit plugin can be used as below:
+
+ 
+* For exporting to a dataset:
+ 
++--------+
+C:\projects\Acme> mvn nddbunit:export
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Acme
+[INFO]    task-segment: [nddbunit:export]
+[INFO] ------------------------------------------------------------------------
+[INFO] [nddbunit:export {execution: default-cli}]
+[INFO] 1. sales-input-account
+[INFO] 2. sales-input-create-account
+[INFO] 3. sales-input-delete-account
+[INFO] 4. sales-input-update-account
+[INFO] 5. sales-result-one-account
+[INFO] 6. sales-result-more-than-one-account
+[INFO] 7. sales-result-domestic-account
+[INFO] 8. sales-result-international-account
+[INFO] 9. sales-seed-countries
+[INFO] 10. sales-seed-states
+[INFO] 11. sales-seed-currencies
+[INFO] 12. sales-seed-users
+[INFO] Enter the number next to the Id that you want to export, 0 to quit
+3
+[INFO] Exporting to DataSetPath: C:\projects\Acme/src/test/resources/dbunit/sales/sales-input-delete-account.xml using URL: jdbc:oracle:thin:@somehost:1521:somesid...
+Successfully wrote file 'C:\projects\Acme/src/test/resources/dbunit/sales/sales-input-delete-account.xml'
++--------+
+
+* To export to a known configuration Id
+ 
++--------+
+ C:\projects\Acme> mvn nddbunit:export -DidToExport=sales-result-domestic-account
++--------+
+
+* For auto exporting to a single dataset:
+ 
++--------+
+C:\projects\Acme> mvn nddbunit:autoExport
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Acme
+[INFO]    task-segment: [nddbunit:autoExport]
+[INFO] ------------------------------------------------------------------------
+[INFO] [nddbunit:autoExport {execution: default-cli}]
+[INFO] 1. sales-region-input
+[INFO] 2. sales-market-share-input
+[INFO] 3. accounts-teller-input
+[INFO] Enter the number next to the Id that you want to export, 0 to quit
+3
+[INFO] Accessing URL: jdbc:oracle:thin:@somehost:1521:somesid as user superman...
+[INFO] Ready to export:
+[INFO]  LEDGER (9 rows).
+[INFO]          ACCOUNT_TYPE (1 row).
+[INFO]          BANK_OFFICE (1 row).
+[INFO]          TEAMMATE (2 rows).
+[INFO]          COUNTRY_CODE (3 row).
+[INFO]          COUNTRY_CODE (1 row).
+[INFO]          US_STATES (1 row).
+[INFO]                  ACCOUNT (3 rows).
+[INFO]                  TELLER (1 row).
+[INFO]                  CLEARING_HOUSE (5 rows).
+[INFO]                  BANK_BRANCH (1 row).
+[INFO]                  SHARE (1 row).
+[INFO]                  TRANSACTION_CODE (1 row).
+[INFO]                          MONEY_TRANSACTION (2 rows).
+[INFO] Exporting to DataSet path: C:\projects\Acme/src/test/resources/dbunit/accounts/teller/teller-input.xml...
+[INFO] Do you want to continue to export 30 rows in 13 tables to this file (Y|N)?
+y
+[INFO] File written...
++--------+
+
+ Above, <<one>> XML file containing the table data in the right order will be created. Note the indentation of the tables that are 
+ shown, indicating the order of data generation. Also note that in the second level, the table COUNTRY_CODE appears twice; in this 
+ situation, the data in the two tables will be merged. There will be only one table element corresponding to COUNTRY_CODE and there will 
+ be four rows against that table definition.
+
+
+* For auto exporting to several datasets.
+
++-----------------------------+
+C:\projects\Acme> mvn nddbunit:autoExport
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Acme
+[INFO]    task-segment: [nddbunit:autoExport]
+[INFO] ------------------------------------------------------------------------
+[INFO] [nddbunit:autoExport {execution: default-cli}]
+[INFO] 1. sales-region-input
+[INFO] 2. sales-market-share-input
+[INFO] 3. accounts-teller-input
+[INFO] Enter the number next to the Id that you want to export, 0 to quit
+2
+[INFO] Accessing URL: jdbc:oracle:thin:@somehost:1521:somesid as user superman...
+[INFO] Ready to export:
+[INFO]  LEDGER (6 rows).
+[INFO]  ACCOUNT_TYPE (3 rows).
+[INFO]  ACCOUNT_CODE (1 row).
+[INFO]  ACCOUNT_TYPE (3 rows).
+[INFO]          BANK_OFFICE (1 row).
+[INFO]          LEDGER (2 rows).
+[INFO]          BANK_BRANCH (5 rows).
+[INFO]          ACCOUNT_AGREEMENT (8 rows).
+[INFO]                  TRANSACTION_ADDRESS (10 rows).
+[INFO]							MONEY_TRANSACTION (4 rows).
+[INFO] Exporting to DataSet directory: C:\projects\Acme/src/test/resources/dbunit/accounts/teller/test [4 level based files]...
+[INFO] Do you want to continue to export 43 rows in 10 tables to these 4 files  (Y|N)?
+y
+[INFO] Please use DBUnit to import/refresh these files in the following order:
+[INFO] share-level-3.xml
+[INFO] share-level-2.xml
+[INFO] share-level-1.xml
+[INFO] share-level-0.xml
+[INFO] Files written...
++------------------------------+
+
+ Above, <<four>> XML files containing the table data in the right order will be created. This is necessary because the table LEDGER appears
+ in two levels. The data in the LEDGER table cannot be merged (as it could be for the ACCOUNT_TYPE table that appears in the same level).
+ Therefore the plugin will create as many files as there are levels. 
+ 
+ When the tables are imported (REFRESHed) in the database via a DBUnit Refresh, it should be imported in the same order as suggested by the 
+ plugin.
+ 
+ In the previous scenario, only one output file was created because all dependent tables were unique across all levels.
+ 
+ 
+ 
+* To auto export to a known configuration Id.
+ 
+ If you already know the configuration Id of the autoExport configuration that you would like to autoExport, then type:
+ 
++--------+
+C:\projects\Acme> mvn nddbunit:autoExport -DidToExport=sales-result-domestic-account
++--------+
+ 

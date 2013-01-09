@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.nayidisha.com/plugins/nddbunit/schema" xmlns:schema="http://www.nayidisha.com/plugins/nddbunit/schema">
+  <xs:element name="config">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="schema:autoExportConfigList"/>
+        <xs:element ref="schema:exportConfigList"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="autoExportConfigList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="schema:autoExportConfig"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="autoExportConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="schema:id"/>
+        <xs:element minOccurs="0" ref="schema:excludedTableList"/>
+        <xs:element minOccurs="0" ref="schema:useQuotedValues"/>
+        <xs:element ref="schema:dataSetFullPath"/>
+        <xs:element ref="schema:baseTable"/>
+        <xs:element minOccurs="0" ref="schema:whereClause"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="excludedTableList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="schema:param"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="param" type="xs:NCName"/>
+  <xs:element name="useQuotedValues" type="xs:boolean"/>
+  <xs:element name="baseTable" type="xs:NCName"/>
+  <xs:element name="whereClause" type="xs:string"/>
+  <xs:element name="exportConfigList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="schema:exportConfig"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="exportConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="schema:id"/>
+        <xs:element ref="schema:dataSetFullPath"/>
+        <xs:choice>
+          <xs:element ref="schema:queryList"/>
+          <xs:element ref="schema:tableList"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="queryList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="schema:query"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="query">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="schema:name">
+          <xs:sequence>
+            <xs:element ref="schema:sql"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sql" type="xs:string"/>
+  <xs:element name="tableList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="schema:table"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="table" type="schema:name"/>
+  <xs:element name="id" type="xs:NCName"/>
+  <xs:element name="dataSetFullPath" type="xs:string"/>
+  <xs:complexType name="name">
+    <xs:sequence>
+      <xs:element ref="schema:name"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="name" type="xs:NCName"/>
+</xs:schema>

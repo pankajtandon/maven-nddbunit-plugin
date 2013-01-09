@@ -1,0 +1,172 @@
+ -----
+ Maven NDDBUnit Plugin
+ -----
+ Pankaj Tandon, Nov 2010, pankajtandon@gmail.com
+ -----
+
+Configuration
+
+  The <<export>> goal of Maven NDPlugin can be configured with any number of export configurations by specifying several <<<exportConfig>>> elements inside a parent <<<exportConfigList>>> element.
+  
+  The <<autoExport>> goal of Maven NDPlugin can be configured with any number of <<<autoExport>>> configurations by specifying several <<<autoExportConfig>>> elements inside a parent <<<autoExportConfigList>>> element. 
+   
+  
++--------+
+
+<plugin>
+<groupId>com.nayidisha.plugins</groupId>
+<artifactId>maven-nddbunit-plugin</artifactId>
+<version>2.0.0</version>
+
+<!--jar file that has the jdbc driver -->
+<dependencies>
+	<dependency>
+		<groupId>com.oracle</groupId>
+		<artifactId>ojdbc6</artifactId>
+		<version>11.2.0.1</version>
+	</dependency>						
+</dependencies>
+
+<configuration>
+    <!--  specify these 4 values in your settings.xml file 
+          OR
+          Pass them on the CLI using the -D option
+     -->
+	<driver>${devDatabaseJdbcDriver}</driver>
+	<url>${devDatabaseURL}</url>
+	<username>${devDatabaseSchemaUser}</username>
+	<password>${devDatabaseSchemaPassword}</password>
+	<format>xml</format>
+
+	<!-- Use this optional parameter to prevent a warning showing up when connecting to Oracle dbs -->
+	<dataTypeFactoryName>org.dbunit.ext.oracle.OracleDataTypeFactory</dataTypeFactoryName>
+	<configFile>${basedir}/src/test/resources/dbunit/config.xml</configFile>
+</configuration>	
+</plugin>
+
++--------+
+
+ The configFile element points to a file that contain the configurations, the contents of which are as below:
+ 
+ 
++------------------+
+
+<config xmlns="http://www.nayidisha.com/plugins/nddbunit/schema"> 
+ 	<!-- Export Config used for the export goal -->
+	<exportConfigList>
+	   <exportConfig>
+		 <id>sales-input-create-account</id>
+		 <dataSetFullPath>${basedir}/src/test/resources/dbunit/sales/input/employee.csv</dataSetFullPath>
+		 <queryList>
+			<query> 
+			  <!-- This name will appear in the table element of the
+			       resulting xml file.
+			  -->
+			  <name>employee</name> 
+			  <sql>
+					<![CDATA[
+					SELECT emp_id, emp_salary FROM employee WHERE emp_salary > 99000
+					]]>     								                
+			  </sql> 
+			</query> 					     
+		 </queryList>
+	   </exportConfig>
+
+	   <exportConfig>
+		 <id>sales-result-one-account</id>
+		 <dataSetFullPath>${basedir}/src/test/resources/dbunit/sales/result/sales-result-one-account.xml</dataSetFullPath>
+		 <tableList>
+		   <table>
+			  <name>sales</name>
+		   </table>		
+		 </tableList>	
+		 <format>csv</format>					     
+	   </exportConfig>
+	   
+	   <exportConfig>
+		 <id>sales-result-more-than-one-account</id>
+		 <dataSetFullPath>${basedir}/src/test/resources/dbunit/sales/result/sales-result-more-than-one-account.xml</dataSetFullPath>
+		 <tableList>
+		   <table>
+			  <name>sales</name>
+		   </table>					     
+		 </tableList>					     
+	   </exportConfig>	 
+	   
+	   <exportConfig>
+		 <id>sales-result-international-account</id>
+		 <dataSetFullPath>${basedir}/src/test/resources/dbunit/sales/result/sales-result-international-account.xml</dataSetFullPath>
+		 <tableList>
+		   <table>
+			  <name>product</name>
+		   </table>					     
+		 </tableList>	
+	    <queryList>
+			<query> 
+			  <name>currency</name> 
+			  <sql>
+					<![CDATA[
+					SELECT * FROM currency WHERE cur_base = 'dollar'
+					]]>     								                
+			  </sql> 
+			</query> 					     
+		 </queryList>					     				     
+		 <format>xml</format>
+	   </exportConfig>	   
+	   
+	</exportConfigList>				   
+
+
+	<!-- autoExport Config used for the autoExport goal -->
+	<autoExportConfigList>
+	  <autoExportConfig>
+		<id>sales-account</id>
+		<!-- These are the tables that will be excluded from the export 
+		    even if they appear as dependent table(s).
+		    Optional element.    
+		-->
+		<excludedTableList>
+		   <param>REGIONS</param>
+		   <param>STATES</param>
+		</excludedTableList>
+
+		<!-- Should the primary key values be quoted for the base table and the dependent tables? -->
+		<useQuotedValues>false</useQuotedValues>
+		<dataSetFullPath>${basedir}/src/test/resources/dbunit/sales/account/sales-account.xml</dataSetFullPath>
+		<baseTable>SALES_AREA</baseTable>
+		<whereClause>WHERE area_id IN (19, 30)</whereClause>
+	  </autoExportConfig>
+
+
+	  <autoExportConfig>
+		<id>marketing-account</id>
+		<useQuotedValues>true</useQuotedValues>
+		<dataSetFullPath>${basedir}/src/test/resources/dbunit/marketing/account/marketing-share.xml</dataSetFullPath>
+		<baseTable>MARKET_SHARE</baseTable>
+	  </autoExportConfig>  
+                                                                                                                          
+	</autoExportConfigList>    
+</config> 
+
++------------------+
+	
+
+ There are a couple of point about these configurations that should be noted:
+ 
+ * The id has to be unique across all the <<<exportConfig/autoExportConfig>>> in the <<<exportConfigList/autoExportConfigList>>>. If they are not, then the <<<export/autoExport>>> goal will fail with an appropriate message.
+ 
+ * The <<<format>>> element can be specified at the top level configuration or in each <<<exportConfig/autoExportConfig>>> in which case, it will override the top level value. 
+ 
+ * Each <<<exportConfig>>> can combine one or more tables and queries.
+ 
+ * The <<<name>>> element of each <<<query>>> node appears as the table name in the resulting xml export. Therefore it is important that the 
+ value of the name element is unique across a generated dataset.
+ 
+ * It may help to make the ids descriptive, so that they can describe what it is that they are doing.
+ 
+ * The <<<dataSetFullPath>>> can be configured with the appropriate directory structure, so that sub-systems that are being tested, the inputs and results are organized properly. For instance, you may 
+ want to have a directory for all sales, another for all accounting, another for marketing etc. Within those, you may want to separate the inputs from results.
+ 
+  
+ 
+ 
